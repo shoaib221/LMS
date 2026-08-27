@@ -5,7 +5,10 @@ export default {
             path: "/courses",
             handler: "enrollment.createCourse",
             config: {
-                auth: {},
+                auth: false,
+                middlewares: [
+                    "global::auth",
+                ],
             },
         },
         {
@@ -21,7 +24,10 @@ export default {
             path: "/courses/by-instructor",
             handler: "enrollment.fetchInstructorCourses",
             config: {
-                auth: {},
+                auth: false,
+                middlewares: [
+                    "global::auth",
+                ],
             },
         },
         {
@@ -29,7 +35,10 @@ export default {
             path: "/courses/enroll",
             handler: "enrollment.enroll",
             config: {
-                auth: {},
+                auth: false,
+                middlewares: [
+                    "global::auth",
+                ],
             },
         },
         {
@@ -37,7 +46,10 @@ export default {
             path: "/courses/enrolled-courses",
             handler: "enrollment.enrolledCourses",
             config: {
-                auth: {},
+                auth: false,
+                middlewares: [
+                    "global::auth",
+                ],
             },
         },
 
