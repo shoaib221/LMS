@@ -1,0 +1,118 @@
+"use client"
+
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { FaSearch } from "react-icons/fa";
+import { Job } from "@/prisma/generated/client";
+import { toast } from "react-toastify";
+import { useRouter, useSearchParams } from "next/navigation";
+import { DateDisplay } from "@/library/miscel/date";
+import { Loading } from "@/library/miscel/loading";
+
+
+export default function Page() {
+    const [page, setPage] = useState(1);
+    const [data, setData] = useState<Job[]>([]);
+    const [pages, setPages] = useState(1);
+    const [searchBy, setSearchBy] = useState("");
+    const [searchFor, setSearchFor] = useState("");
+    const [limit, setLimit] = useState(10);
+    const router = useRouter();
+    const searchParams = useSearchParams()
+    const category_id = searchParams.get("category-id") ?? "";
+    const [loading, setLoading] = useState(true)
+
+    async function fetchData(  ) {
+        setLoading(true);
+        try {
+            const res = await axios.get(`/api/job/all?searchBy=${searchBy}&searchFor=${searchFor}&page=${page}&limit=${limit}&category_id=${ category_id }`)
+            setData(res.data.data)
+            setPages(res.data.pages)
+            console.log("success")
+        } catch (err) {
+            console.error( "error", err)
+            alert("error")
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+
+        
+
+        fetchData();
+
+    }, [page, category_id])
+
+
+
+
+
+    return (
+        <div className="px-2" >
+            <div className="bg-(--color3) text-(--color1) w-full max-w-[600px] mx-auto px-2 items-center my-4 flex rounded-2xl gap-2 border-2 border-(--color3)" >
+                <select value={searchBy} onChange={(e) => setSearchBy(e.target.value)}
+                    className="bg-(--color3) text-(--color1)" >
+                    <option value={""} >Search By</option>
+                    <option value={"category"} >Category</option>
+                    <option value={"title"} >Title</option>
+                </select>
+
+                <input className="grow p-2" placeholder="Search for ..." value={searchFor} onChange={(e) => setSearchFor(e.target.value)} />
+
+                <FaSearch onClick={fetchData} className="hover:opacity-70 cursor-pointer" />
+            </div>
+
+
+            <div className="flex flex-col gap-4 p-4 max-w-250 mx-auto" >
+                {data && data.length > 0 && data.map((elem, _) => (
+                    <div key={_} className="box-13 flex justify-between" onClick={() => router.push(`/job/${elem.id}`)} >
+                        
+                        <div className="grid grid-cols-[7rem_1fr]" >
+                            <div className="header-3" >Title :</div>
+                            <div className="header-3" >{elem.title}</div>
+
+                            <div> Deadline : </div>
+                            <DateDisplay date={elem.deadline} />
+
+                            <div>Needed :</div>
+                            <div>{ elem.required_employees } workers</div>
+                            
+
+                        </div> 
+
+                        <div className="h-20 w-20 bg-cover bg-center" style={{ backgroundImage: `url(${ elem.imageUrl })` }} >
+
+                        </div>
+                    </div>
+                ))}
+
+            </div>
+
+            
+
+            {/* Pagination */}
+            { loading ? <Loading /> : data?.length >0 ? <div className="flex gap-4 mx-auto justify-center items-center my-4" >
+                {page > 1 && <div  className={`hover:opacity-70 font-bold px-2 cursor-pointer`}
+                    onClick={() => setPage(page - 1)} >
+                    Previous
+                </div>}
+
+                {[...Array(pages).keys()].map((__, _) => (
+                    <div key={_} className={`${page === _ + 1 && 'button-3'} hover:opacity-70 font-bold px-2 cursor-pointer`} onClick={() => setPage(_ + 1)} >
+                        {_ + 1}
+                    </div>
+                ))}
+
+                {page < pages && <div className={`hover:opacity-70 font-bold px-2 cursor-pointer`}
+                    onClick={() => setPage(page + 1)} >
+                    Next
+                </div>}
+            </div>: 
+            <div className="text-center" >No data found</div> }
+
+
+        </div>
+    )
+}

@@ -1,0 +1,8 @@
+POST /api/auth/local/register  <-  username, email, password -> c
+POST /api/auth/login     <-  email, password  ->  c
+GET   /api/users/me   (All users)
+GET    /api/blogs  
+GET    /api/courses
+POST    /api/courses  <-  title, description
+POST   /api/courses/enroll  <- 
+GET    /api/courses/enrolled-courses (student)
