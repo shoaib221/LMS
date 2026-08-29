@@ -28,7 +28,7 @@ export default (config: any, { strapi }: any) => {
 
 
             if (!user) {
-                return ctx.unauthorized("User not found");
+                throw new Error("Unauthorized action")
             }
 
 
@@ -37,7 +37,7 @@ export default (config: any, { strapi }: any) => {
             await next();
 
         } catch (err) {
-            return ctx.unauthorized("Invalid token");
+            return ctx.unauthorized("Unauthorized action");
         }
     };
 };

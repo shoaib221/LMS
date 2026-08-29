@@ -1,5 +1,117 @@
-/**
- * course controller
- */
+export default {
 
+
+    async fetchCourses(ctx: any) {
+        try {
+            console.log("enrolledCourses");
+            const user = ctx.state.user;
+
+            const courses = await strapi.db
+                .query("api::course.course")
+                .findMany({
+                    populate: {
+                        instructor: true,
+                    },
+                });
+
+
+            ctx.body = {
+                message: "Student enrolled successfully.",
+                courses
+            };
+
+        }
+        catch (error: any) {
+            return ctx.internalServerError(error.message);
+        }
+    },
+
+    async fetchInstructorCourses(ctx: any) {
+
+        try {
+
+            console.log("fetchInstructorCourses");
+            const user = ctx.state.user;
+
+            if (user.user_role === "student") {
+                throw new Error("Unauthorized action")
+            }
+
+            const courses = await strapi.db
+                .query("api::course.course")
+                .findMany({
+                    where: {
+                        instructor: {
+                            id: user.id,
+                        },
+                    },
+                    populate: {
+                        instructor: true
+                    },
+                });
+
+
+            ctx.body = {
+                courses
+            };
+        }
+        catch (error: any) {
+            return ctx.internalServerError(error.message);
+        }
+    },
+
+    async createCourse(ctx: any) {
+
+        try {
+            console.log("createCourse");
+            const user = ctx.state.user;
+
+
+
+            if (!user || user.user_role === "student") {
+                return ctx.unauthorized("Unauthorized action.");
+            }
+
+
+            const { title, description } = ctx.request.body;
+
+
+            if (!title) {
+                return ctx.badRequest("Title is required.");
+            }
+
+            const today = new Date().toISOString().split("T")[0];
+            const course = await strapi.db
+                .query("api::course.course")
+                .create({
+                    data: {
+                        title,
+                        description,
+                        instructor: user.id,
+                        published: today
+                    },
+                });
+
+
+            ctx.body = {
+                message: "Course created successfully.",
+                course
+            };
+        }
+        catch (error: any) {
+            return ctx.internalServerError(error.message);
+        }
+
+    },
+
+    async test(ctx: any) {
+        console.log("test");
+        const user = ctx.state.user;
+
+        ctx.body = {
+            message: "Test",
+            user
+        };
+    },
+};
 

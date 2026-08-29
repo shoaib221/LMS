@@ -1,34 +1,5 @@
 
-
-
-const apiRoutes = [
-    {
-        path: "/api/auth/register",
-        method: "POST",
-        required_fields: [
-            "username", "email", "password"
-        ],
-        access: ["public"]
-    },
-    {
-        path: "/api/auth/login",
-        method: "POST",
-        required_fields: [
-            "email", "password"
-        ],
-        access: ["public"]
-    },
-    {
-        method: "GET",
-        path: "/api/auth/me",
-        required_fields: [],
-        access: [
-            "all users"
-        ]
-    },
-]
-
-
+import { apiRoutes } from "../../../extra/apiRoutes";
 
 export default {
 
