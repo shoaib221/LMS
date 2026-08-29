@@ -46,10 +46,20 @@ export default {
                 blocked: false,
             });
 
+        const jwtToken =
+            await strapi
+                .plugin("users-permissions")
+                .service("jwt")
+                .issue({
+                    id: user.id,
+                    email: user.email
+                });
+
 
         ctx.body = {
             message: "Registered successfully",
             user,
+            jwtToken
         };
     },
 
@@ -96,7 +106,7 @@ export default {
         }
 
 
-        const jwt =
+        const jwtToken =
             await strapi
                 .plugin("users-permissions")
                 .service("jwt")
@@ -107,7 +117,7 @@ export default {
 
 
         ctx.body = {
-            jwt,
+            jwtToken,
             user: {
                 id: user.id,
                 username: user.username,
