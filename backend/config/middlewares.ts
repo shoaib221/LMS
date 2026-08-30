@@ -9,7 +9,7 @@ const config: Core.Config.Middlewares = [
 		config: {
 			origin: [
 				"http://localhost:3000",
-				"https://lms-delta-cyan.vercel.app/"
+				"https://lms-delta-cyan.vercel.app"
 			],
 			methods: [
 				"GET",
