@@ -51,7 +51,7 @@ export default {
                 .plugin("users-permissions")
                 .service("jwt")
                 .issue({
-                    id: user.id,
+                    username: user.username,
                     email: user.email
                 });
 
@@ -65,65 +65,73 @@ export default {
 
     async login(ctx: any) {
 
-        console.log("login");
+        try {
+            console.log("login");
 
-        const {
-            email,
-            password,
-        } = ctx.request.body;
-
-
-        const user = await strapi
-            .query("plugin::users-permissions.user")
-            .findOne({
-                where: {
-                    email,
-                },
-            });
+            const {
+                email,
+                password,
+            } = ctx.request.body;
 
 
-        if (!user) {
-            return ctx.badRequest(
-                "Invalid email"
-            );
-        }
-
-
-        const validPassword =
-            await strapi
-                .plugin("users-permissions")
-                .service("user")
-                .validatePassword(
-                    password,
-                    user.password
-                );
-
-
-        if (!validPassword) {
-            return ctx.badRequest(
-                "Incorrect Password"
-            );
-        }
-
-
-        const jwtToken =
-            await strapi
-                .plugin("users-permissions")
-                .service("jwt")
-                .issue({
-                    id: user.id,
-                    email: user.email
+            const user = await strapi
+                .query("plugin::users-permissions.user")
+                .findOne({
+                    where: {
+                        email,
+                    },
                 });
 
 
-        ctx.body = {
-            jwtToken,
-            user: {
-                id: user.id,
-                username: user.username,
-                email: user.email,
-            },
-        };
+            if (!user) {
+                return ctx.badRequest(
+                    "Invalid email"
+                );
+            }
+
+
+            const validPassword =
+                await strapi
+                    .plugin("users-permissions")
+                    .service("user")
+                    .validatePassword(
+                        password,
+                        user.password
+                    );
+
+
+            if (!validPassword) {
+                return ctx.badRequest(
+                    "Invalid password"
+                );
+            }
+
+
+            const jwtToken =
+                await strapi
+                    .plugin("users-permissions")
+                    .service("jwt")
+                    .issue({
+                        email: user.email,
+                        username: user.username
+                    });
+
+
+            ctx.body = {
+                jwtToken,
+                user
+            };
+        }
+        catch (error) {
+            strapi.log.error("Login error:", error);
+
+            return ctx.internalServerError(
+                "An unexpected error occurred. Please try again later."
+            );
+
+        }
+
+
     },
 
     async me(ctx: any) {
