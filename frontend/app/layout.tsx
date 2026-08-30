@@ -1,14 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+
 import "./globals.css";
 import AuthProvider from "@/providers/AuthProvider";
 import AuthListener from "@/components/auth/AuthListener";
 
 
-const inter = Inter({
-	subsets: ["latin"],
-	variable: "--font-inter",
-});
 
 export const metadata: Metadata = {
 	title: {
@@ -34,7 +30,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body className={`${inter.variable} min-h-screen bg-slate-50 antialiased`}>
+			<body className={`min-h-screen bg-slate-50 antialiased`}>
 				<AuthProvider>
 					<AuthListener />
 					{children}
