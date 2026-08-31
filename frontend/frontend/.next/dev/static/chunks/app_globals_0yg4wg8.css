@@ -49,7 +49,6 @@
 
 @layer theme {
   :root, :host {
-    --color-red-50: #fef2f2;
     --color-red-100: #ffe2e2;
     --color-red-600: #e40014;
     --color-red-700: #bf000f;
@@ -136,7 +135,6 @@
 
   @supports (color: lab(0% 0 0)) {
     :root, :host {
-      --color-red-50: lab(96.5005% 4.18511 1.52329);
       --color-red-100: lab(92.243% 10.2865 3.83865);
       --color-red-600: lab(48.4493% 77.4328 61.5452);
       --color-red-700: lab(40.4273% 67.2623 53.7441);
@@ -582,10 +580,6 @@
     height: calc(var(--spacing) * 2);
   }
 
-  .h-10 {
-    height: calc(var(--spacing) * 10);
-  }
-
   .h-12 {
     height: calc(var(--spacing) * 12);
   }
@@ -630,10 +624,6 @@
     min-height: 100vh;
   }
 
-  .w-10 {
-    width: calc(var(--spacing) * 10);
-  }
-
   .w-12 {
     width: calc(var(--spacing) * 12);
   }
@@ -648,10 +638,6 @@
 
   .w-64 {
     width: calc(var(--spacing) * 64);
-  }
-
-  .w-72 {
-    width: calc(var(--spacing) * 72);
   }
 
   .w-full {
@@ -770,12 +756,6 @@
     gap: calc(var(--spacing) * 12);
   }
 
-  :where(.space-y-2 > :not(:last-child)) {
-    --tw-space-y-reverse: 0;
-    margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));
-    margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)));
-  }
-
   :where(.space-y-3 > :not(:last-child)) {
     --tw-space-y-reverse: 0;
     margin-block-start: calc(calc(var(--spacing) * 3) * var(--tw-space-y-reverse));
@@ -844,11 +824,6 @@
   .border-t {
     border-top-style: var(--tw-border-style);
     border-top-width: 1px;
-  }
-
-  .border-r {
-    border-right-style: var(--tw-border-style);
-    border-right-width: 1px;
   }
 
   .border-b {
@@ -1440,10 +1415,6 @@
       background-color: var(--color-pink-600);
     }
 
-    .hover\:bg-red-50:hover {
-      background-color: var(--color-red-50);
-    }
-
     .hover\:bg-sky-500:hover {
       background-color: var(--color-sky-500);
     }
@@ -1506,10 +1477,6 @@
   }
 
   @media (min-width: 40rem) {
-    .sm\:block {
-      display: block;
-    }
-
     .sm\:grid-cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }

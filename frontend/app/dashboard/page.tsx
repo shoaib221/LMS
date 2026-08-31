@@ -4,31 +4,23 @@ import { useAuth } from "@/hooks/useAuth";
 
 import StudentDashboard from "@/components/dashboard/student/index";
 import InstructorDashboard from "@/components/dashboard/instructor/index";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 
 export default function DashboardPage() {
+    const { user } = useAuth()
 
-    const { user } = useAuth();
+    return (
+        <ProtectedRoute>
+            <>
+                {user?.user_role === 'student' && <StudentDashboard />}
 
-
-    if (!user) {
-        return null;
-    }
-
-
-    switch (user.user_role) {
-
-        case "student":
-            return <StudentDashboard />;
-        case "instructor":
-            return <InstructorDashboard />;
+                {user?.user_role === 'instructor' && <InstructorDashboard />}
+            </>
+        </ProtectedRoute>
+    )
 
 
-        default:
-            return (
-                <div>
-                    Invalid user role
-                </div>
-            );
-    }
+
+
 }

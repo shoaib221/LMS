@@ -7,6 +7,7 @@ import {
     CheckCircle,
     TrendingUp,
 } from "lucide-react";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 
 const courses = [
@@ -37,6 +38,7 @@ const courses = [
 export default function StudentDashboard() {
 
     return (
+
         <div className="space-y-8">
 
             {/* Welcome */}

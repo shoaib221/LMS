@@ -9,6 +9,7 @@ import {
     BarChart3,
     MessageSquare,
 } from "lucide-react";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 
 const courses = [
@@ -39,6 +40,7 @@ const courses = [
 export default function InstructorDashboard() {
 
     return (
+
         <div className="space-y-8">
 
 
