@@ -177,7 +177,7 @@ export default function StudentDashboard() {
 
 
                                     <Link
-                                        href={`/learning/${course.id}`}
+                                        href={`/enrolled-courses/${course.id}`}
                                         className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-white hover:bg-blue-700"
                                     >
                                         <PlayCircle size={18} />

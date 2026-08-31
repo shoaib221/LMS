@@ -1130,10 +1130,12 @@ export interface PluginUsersPermissionsUser
       'manyToMany',
       'api::course.course'
     >;
+    first_name: Schema.Attribute.String;
     instructed_courses: Schema.Attribute.Relation<
       'oneToMany',
       'api::course.course'
     >;
+    last_name: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
