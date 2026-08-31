@@ -53,14 +53,14 @@ export default function ProfilePage() {
                         </div>
 
 
-                        {user?.role && (
+                        {user?.user_role && (
                             <div>
                                 <p className="text-sm text-gray-500">
                                     Role
                                 </p>
 
                                 <p className="text-lg font-medium capitalize text-gray-900">
-                                    {user.role}
+                                    {user.user_role}
                                 </p>
                             </div>
                         )}
