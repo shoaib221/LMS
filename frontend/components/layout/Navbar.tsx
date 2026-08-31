@@ -29,10 +29,10 @@ export default function Navbar() {
                     </Link>
 
                     <Link
-                        href="/categories"
+                        href="/dashboard"
                         className="text-sm font-medium text-slate-700 transition hover:text-blue-600"
                     >
-                        Categories
+                        Dashboard
                     </Link>
 
                     <Link

@@ -5,7 +5,7 @@ import { createContext } from "react";
 export interface User {
     username: string;
     email: string;
-    role?: string;
+    user_role?: string;
 }
 
 export interface AuthContextType {

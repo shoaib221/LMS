@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import AuthProvider from "@/providers/AuthProvider";
 import AuthListener from "@/components/auth/AuthListener";
+import Navbar from "@/components/layout/Navbar";
 
 
 
@@ -33,6 +34,7 @@ export default function RootLayout({
 			<body className={`min-h-screen bg-slate-50 antialiased`}>
 				<AuthProvider>
 					<AuthListener />
+					<Navbar />
 					{children}
 				</AuthProvider>
 			</body>

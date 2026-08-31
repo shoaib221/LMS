@@ -12,7 +12,7 @@ export default function PublicLayout({
 }: PublicLayoutProps) {
     return (
         <>
-            <Navbar />
+
 
             <main className="min-h-[calc(100vh-80px)] bg-slate-50">
                 {children}
