@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     ChevronDown,
     ChevronRight,
@@ -12,40 +12,46 @@ import {
     Menu,
     X,
 } from "lucide-react";
+import api from "@/lib/axios";
+import { Lesson } from "@/types/lesson";
+import { Quiz } from "@/types/quiz";
 
 interface CourseSidebarProps {
     courseId: string;
 }
 
-// Temporary data
-const lessons = [
-    { id: 1, title: "Lesson 1" },
-    { id: 2, title: "Lesson 2" },
-    { id: 3, title: "Lesson 3" },
-    { id: 4, title: "Lesson 4" },
-    { id: 5, title: "Lesson 5" },
-];
 
-const quizzes = [
-    { id: 1, title: "Quiz 1" },
-    { id: 2, title: "Quiz 2" },
-    { id: 3, title: "Quiz 3" },
-    { id: 4, title: "Quiz 4" },
-    { id: 5, title: "Quiz 5" },
-];
 
 export default function CourseSidebar({
     courseId,
 }: CourseSidebarProps) {
     const pathname = usePathname();
-
     const [sidebarOpen, setSidebarOpen] = useState(true);
-
     const [lessonOpen, setLessonOpen] = useState(true);
-
     const [quizOpen, setQuizOpen] = useState(true);
-
     const isActive = (href: string) => pathname === href;
+
+    const [lessons, setLessons] = useState<Lesson[]>([]);
+    const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+
+
+    useEffect(() => {
+        // Fetch lessons and quizzes for the course
+        const fetchData = async () => {
+            try {
+                const lessonsResponse = await api.get(`/lessons/${courseId}`);
+                setLessons(lessonsResponse.data.lessons);
+                const quizzesResponse = await api.get(`/quiz/${courseId}`);
+                setQuizzes(quizzesResponse.data.quizzes);
+            }
+            catch (error) {
+                console.error("Error fetching lessons and quizzes:", error);
+            }
+        };
+
+        fetchData();
+    }, [courseId]);
+
 
     return (
         <>
@@ -143,7 +149,7 @@ export default function CourseSidebar({
                     {lessonOpen && (
                         <div className="ml-6 mt-2 space-y-2">
 
-                            {lessons.map((lesson) => {
+                            {lessons && lessons.map((lesson) => {
 
                                 const href =
                                     `/course-analytics/${courseId}/lesson/${lesson.id}`;

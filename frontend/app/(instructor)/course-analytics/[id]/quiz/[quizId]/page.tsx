@@ -4,17 +4,12 @@ import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { CirclePlus, Loader2, Save, Trash2 } from "lucide-react";
 import api from "@/lib/axios";
+import QuestionCreator from "@/components/question/QuestionInput";
+import { Question } from "@/types/question";
+import { Quiz } from "@/types/quiz";
+import { Circle, CircleDot } from "lucide-react";
 
-interface Question {
-    question: string;
-    options: [string, string, string, string];
-    correctAnswer: 0 | 1 | 2 | 3;
-}
 
-interface Quiz {
-    title: string;
-    questions: Question[];
-}
 
 export default function EditQuizPage() {
     const router = useRouter();
@@ -24,27 +19,32 @@ export default function EditQuizPage() {
         quizId: string;
     }>();
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
-
     const [title, setTitle] = useState("");
-
+    const [description, setDescription] = useState("");
     const [questions, setQuestions] = useState<Question[]>([]);
+    const [quiz, setQuiz] = useState<Quiz | null>(null);
 
     useEffect(() => {
+        if (!id || !quizId) {
+            return;
+        }
+
         async function fetchQuiz() {
             try {
-                const res = await api.get(
+                setLoading(true);
+                const response = await api.get(
                     `/api/courses/${id}/quizzes/${quizId}`
                 );
-
-                const quiz: Quiz = res.data;
-
-                setTitle(quiz.title);
-                setQuestions(quiz.questions);
-            } catch {
-                setError("Failed to load quiz.");
+                setQuiz(response.data.quiz);
+                setTitle(response.data.quiz.title);
+                setDescription(response.data.quiz.description);
+            } catch (err) {
+                setError(
+                    "Failed to fetch quiz data. Please try again later."
+                );
             } finally {
                 setLoading(false);
             }
@@ -53,49 +53,52 @@ export default function EditQuizPage() {
         fetchQuiz();
     }, [id, quizId]);
 
-    function updateQuestion(index: number, value: string) {
-        const copy = [...questions];
-        copy[index].question = value;
-        setQuestions(copy);
+
+    async function fetchQuestions() {
+        try {
+            setLoading(true);
+            const response = await api.get(
+                `/question/${quizId}`
+            );
+
+            console.log("Fetched questions:", response);
+
+            setQuestions(response.data.questions);
+        } catch (err) {
+            setError(
+                "Failed to fetch quiz data. Please try again later."
+            );
+        } finally {
+            setLoading(false);
+        }
     }
 
-    function updateOption(
-        questionIndex: number,
-        optionIndex: number,
-        value: string
-    ) {
-        const copy = [...questions];
-        copy[questionIndex].options[optionIndex] = value;
-        setQuestions(copy);
+    useEffect(() => {
+
+        if (!id || !quizId) {
+
+            return;
+        }
+
+        fetchQuestions();
+
+
+    }, [id, quizId]);
+
+    async function deleteQuestion(questionId: number) {
+
+        try {
+            const response = await api.delete(
+                `/question/${questionId}`
+            );
+        }
+        catch (err) {
+            setError(
+                "Failed to delete question. Please try again later."
+            );
+        }
     }
 
-    function updateCorrectAnswer(
-        questionIndex: number,
-        optionIndex: number
-    ) {
-        const copy = [...questions];
-        copy[questionIndex].correctAnswer =
-            optionIndex as 0 | 1 | 2 | 3;
-
-        setQuestions(copy);
-    }
-
-    function addQuestion() {
-        setQuestions([
-            ...questions,
-            {
-                question: "",
-                options: ["", "", "", ""],
-                correctAnswer: 0,
-            },
-        ]);
-    }
-
-    function removeQuestion(index: number) {
-        setQuestions(
-            questions.filter((_, i) => i !== index)
-        );
-    }
 
     async function handleSubmit(
         e: FormEvent<HTMLFormElement>
@@ -133,6 +136,8 @@ export default function EditQuizPage() {
         );
     }
 
+
+
     return (
         <main className="mx-auto max-w-6xl p-8">
 
@@ -160,104 +165,20 @@ export default function EditQuizPage() {
                         required
                     />
 
+                    <label className="mb-2 block font-semibold">
+                        Description
+                    </label>
+
+                    <input
+                        value={description}
+                        onChange={(e) =>
+                            setDescription(e.target.value)
+                        }
+                        className="w-full rounded-xl border p-4"
+                        required
+                    />
+
                 </section>
-
-                {questions.map((question, index) => (
-
-                    <section
-                        key={index}
-                        className="rounded-3xl bg-white p-8 shadow"
-                    >
-
-                        <div className="mb-6 flex items-center justify-between">
-
-                            <h2 className="text-2xl font-semibold">
-                                Question {index + 1}
-                            </h2>
-
-                            {questions.length > 1 && (
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        removeQuestion(index)
-                                    }
-                                    className="text-red-500"
-                                >
-                                    <Trash2 />
-                                </button>
-                            )}
-
-                        </div>
-
-                        <textarea
-                            rows={3}
-                            value={question.question}
-                            onChange={(e) =>
-                                updateQuestion(
-                                    index,
-                                    e.target.value
-                                )
-                            }
-                            className="mb-8 w-full rounded-xl border p-4"
-                            required
-                        />
-
-                        <div className="space-y-4">
-
-                            {question.options.map(
-                                (option, optionIndex) => (
-
-                                    <div
-                                        key={optionIndex}
-                                        className="flex items-center gap-4"
-                                    >
-
-                                        <input
-                                            type="radio"
-                                            checked={
-                                                question.correctAnswer ===
-                                                optionIndex
-                                            }
-                                            onChange={() =>
-                                                updateCorrectAnswer(
-                                                    index,
-                                                    optionIndex
-                                                )
-                                            }
-                                        />
-
-                                        <input
-                                            value={option}
-                                            onChange={(e) =>
-                                                updateOption(
-                                                    index,
-                                                    optionIndex,
-                                                    e.target.value
-                                                )
-                                            }
-                                            className="flex-1 rounded-xl border p-4"
-                                            required
-                                        />
-
-                                    </div>
-
-                                )
-                            )}
-
-                        </div>
-
-                    </section>
-
-                ))}
-
-                <button
-                    type="button"
-                    onClick={addQuestion}
-                    className="flex items-center gap-2 rounded-xl border px-6 py-3"
-                >
-                    <CirclePlus />
-                    Add Question
-                </button>
 
                 {error && (
                     <div className="rounded-xl bg-red-100 p-4 text-red-700">
@@ -287,6 +208,67 @@ export default function EditQuizPage() {
                 </div>
 
             </form>
+
+            <QuestionCreator quizId={quizId} onCreation={fetchQuestions} />
+
+
+            {questions.map((question) => (
+
+                <div
+                    key={question.id}
+                    className="items-center justify-between rounded-xl bg-white p-5 shadow"
+                >
+
+                    <p className="flex items-center justify-between gap-3 text-lg font-semibold">
+
+                        <div>
+                            {question.statement || "Untitled Question"}
+                        </div>
+
+
+                        <button
+                            onClick={() =>
+                                deleteQuestion(question.id || 0)
+                            }
+                            className="text-red-500 hover:text-red-700"
+                        >
+                            <Trash2 />
+                        </button>
+                    </p>
+
+
+                    <ul className="space-y-2">
+                        {question.options?.map((option, index) => (
+                            <li
+                                key={index}
+                                className="flex items-center gap-3 rounded-lg px-3 py-2"
+                            >
+                                {question.correctAnswer === index ? (
+                                    <CircleDot className="h-5 w-5 text-green-600" />
+                                ) : (
+                                    <Circle className="h-5 w-5 text-slate-400" />
+                                )}
+
+                                <span
+                                    className={
+                                        question.correctAnswer === index
+                                            ? "font-medium text-green-700"
+                                            : "text-slate-700"
+                                    }
+                                >
+                                    {option}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+
+
+
+
+                </div>
+
+            ))}
+
 
         </main>
     );

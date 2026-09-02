@@ -11,22 +11,7 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "question": {
-      "type": "string"
-    },
-    "optionA": {
-      "type": "string"
-    },
-    "optionB": {
-      "type": "string"
-    },
-    "optionC": {
-      "type": "string"
-    },
-    "optionD": {
-      "type": "string"
-    },
-    "correctAnswer": {
+    "statement": {
       "type": "string"
     },
     "quiz": {
@@ -39,6 +24,12 @@
       "type": "integer",
       "required": true,
       "unique": true
+    },
+    "correctAnswer": {
+      "type": "integer"
+    },
+    "options": {
+      "type": "json"
     }
   }
 }

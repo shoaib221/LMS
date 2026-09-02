@@ -10,75 +10,22 @@ import {
 } from "lucide-react";
 
 import api from "@/lib/axios";
+import { Question } from "@/types/question";
+import { useParams } from "next/navigation";
 
-interface Question {
-    question: string;
-    options: string[];
-    correctAnswer: number;
-}
 
 export default function AddQuizPage() {
-    const router = useRouter();
 
+    const { id: courseId } = useParams<{ id: string }>();
+
+
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-
     const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [order, setOrder] = useState(1);
 
-    const [questions, setQuestions] = useState<Question[]>([
-        {
-            question: "",
-            options: ["", "", "", ""],
-            correctAnswer: 0,
-        },
-    ]);
-
-    function updateQuestion(
-        index: number,
-        value: string
-    ) {
-        const copy = [...questions];
-        copy[index].question = value;
-        setQuestions(copy);
-    }
-
-    function updateOption(
-        questionIndex: number,
-        optionIndex: number,
-        value: string
-    ) {
-        const copy = [...questions];
-        copy[questionIndex].options[optionIndex] =
-            value;
-        setQuestions(copy);
-    }
-
-    function updateCorrectAnswer(
-        questionIndex: number,
-        optionIndex: number
-    ) {
-        const copy = [...questions];
-        copy[questionIndex].correctAnswer =
-            optionIndex;
-        setQuestions(copy);
-    }
-
-    function addQuestion() {
-        setQuestions([
-            ...questions,
-            {
-                question: "",
-                options: ["", "", "", ""],
-                correctAnswer: 0,
-            },
-        ]);
-    }
-
-    function removeQuestion(index: number) {
-        setQuestions(
-            questions.filter((_, i) => i !== index)
-        );
-    }
 
     async function handleSubmit(
         e: FormEvent<HTMLFormElement>
@@ -89,12 +36,22 @@ export default function AddQuizPage() {
             setLoading(true);
             setError("");
 
-            await api.post("/api/quizzes", {
+            console.log(title, description, order, courseId)
+
+            await api.post("/quiz", {
                 title,
-                questions,
+                description,
+                order,
+                courseId,
             });
 
-            router.back();
+            setTitle("");
+            setDescription("");
+            setOrder(1);
+
+            alert("Quiz created successfully!");
+
+
         } catch (err: any) {
             setError(
                 err.response?.data?.error?.message ??
@@ -119,131 +76,63 @@ export default function AddQuizPage() {
 
                 <section className="rounded-3xl bg-white p-8 shadow">
 
-                    <label className="mb-2 block font-semibold">
-                        Quiz Title
-                    </label>
+                    <div>
+                        <label className="mb-2 block font-semibold">
+                            Quiz Title
+                        </label>
 
-                    <input
-                        value={title}
-                        onChange={(e) =>
-                            setTitle(e.target.value)
-                        }
-                        className="w-full rounded-xl border p-4"
-                        placeholder="Quiz 1"
-                        required
-                    />
-
-                </section>
-
-                {questions.map((question, index) => (
-
-                    <section
-                        key={index}
-                        className="rounded-3xl bg-white p-8 shadow"
-                    >
-
-                        <div className="mb-6 flex items-center justify-between">
-
-                            <h2 className="text-2xl font-semibold">
-                                Question {index + 1}
-                            </h2>
-
-                            {questions.length > 1 && (
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        removeQuestion(
-                                            index
-                                        )
-                                    }
-                                    className="text-red-500"
-                                >
-                                    <Trash2 />
-                                </button>
-                            )}
-
-                        </div>
-
-                        <textarea
-                            value={question.question}
+                        <input
+                            value={title}
                             onChange={(e) =>
-                                updateQuestion(
-                                    index,
-                                    e.target.value
-                                )
+                                setTitle(e.target.value)
                             }
-                            className="mb-8 w-full rounded-xl border p-4"
-                            rows={3}
-                            placeholder="Question..."
+                            className="w-full rounded-xl border p-4"
+                            placeholder="Quiz 1"
                             required
                         />
 
-                        <div className="space-y-4">
+                    </div>
 
-                            {question.options.map(
-                                (
-                                    option,
-                                    optionIndex
-                                ) => (
+                    <div>
 
-                                    <div
-                                        key={optionIndex}
-                                        className="flex items-center gap-4"
-                                    >
+                        <label className="mb-2 block font-semibold">
+                            Description
+                        </label>
 
-                                        <input
-                                            type="radio"
-                                            checked={
-                                                question.correctAnswer ===
-                                                optionIndex
-                                            }
-                                            onChange={() =>
-                                                updateCorrectAnswer(
-                                                    index,
-                                                    optionIndex
-                                                )
-                                            }
-                                        />
+                        <input
+                            value={description}
+                            onChange={(e) =>
+                                setDescription(e.target.value)
+                            }
+                            className="w-full rounded-xl border p-4"
+                            placeholder="Quiz 1"
+                            required
+                        />
 
-                                        <input
-                                            value={option}
-                                            onChange={(e) =>
-                                                updateOption(
-                                                    index,
-                                                    optionIndex,
-                                                    e.target
-                                                        .value
-                                                )
-                                            }
-                                            className="flex-1 rounded-xl border p-4"
-                                            placeholder={`Option ${optionIndex +
-                                                1
-                                                }`}
-                                            required
-                                        />
+                    </div>
 
-                                    </div>
 
-                                )
-                            )}
+                    <div>
 
-                        </div>
+                        <label className="mb-2 block font-semibold">
+                            Order
+                        </label>
 
-                    </section>
+                        <input
+                            value={order}
+                            onChange={(e) =>
+                                setOrder(parseInt(e.target.value) || 0)
+                            }
+                            className="w-full rounded-xl border p-4"
+                            placeholder="Quiz 1"
+                            required
+                        />
+                    </div>
 
-                ))}
 
-                <button
-                    type="button"
-                    onClick={addQuestion}
-                    className="flex items-center gap-2 rounded-xl border px-6 py-3"
-                >
+                </section>
 
-                    <CirclePlus />
 
-                    Add Question
-
-                </button>
 
                 {error && (
                     <div className="rounded-xl bg-red-100 p-4 text-red-700">

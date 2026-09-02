@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
     BookOpen,
     Clock,
@@ -19,9 +19,9 @@ interface AddLessonProps {
 
 
 
-export default function AddLesson({
-    courseId,
-}: AddLessonProps) {
+export default function AddLesson({ }: AddLessonProps) {
+
+    const { id: courseId } = useParams<{ id: string }>();
     const router = useRouter();
 
     const [loading, setLoading] = useState(false);
@@ -29,10 +29,9 @@ export default function AddLesson({
 
     const [formData, setFormData] = useState({
         title: "",
-        description: "",
-        videoUrl: "",
-        duration: "",
-        notes: "",
+        content: "",
+        videoURL: "",
+        order: 1
     });
 
     function handleChange(
@@ -59,11 +58,19 @@ export default function AddLesson({
             setError("");
 
             await api.post(
-                `/api/courses/${courseId}/lessons`,
+                `/lessons/${courseId}`,
                 formData
             );
 
-            router.back();
+
+            setFormData({
+                title: "",
+                content: "",
+                videoURL: "",
+                order: 1
+            });
+
+
         }
         catch (err: any) {
             setError(
@@ -92,6 +99,7 @@ export default function AddLesson({
 
                     <div className="space-y-6">
 
+                        {/* title */}
                         <div>
 
                             <label className="mb-2 block font-medium">
@@ -119,19 +127,50 @@ export default function AddLesson({
 
                         </div>
 
+
+                        {/* Order */}
                         <div>
 
                             <label className="mb-2 block font-medium">
-                                Description
+                                Lesson Order
+                            </label>
+
+                            <div className="flex items-center rounded-xl border px-4">
+
+                                <BookOpen
+                                    size={18}
+                                    className="text-slate-400"
+                                />
+
+                                <input
+                                    type="number"
+                                    name="order"
+                                    value={formData.order}
+                                    onChange={handleChange}
+                                    placeholder="1"
+                                    className="w-full p-4 outline-none"
+                                    required
+                                />
+
+                            </div>
+
+                        </div>
+
+
+                        {/* Content */}
+                        <div>
+
+                            <label className="mb-2 block font-medium">
+                                Content
                             </label>
 
                             <textarea
-                                rows={5}
-                                name="description"
-                                value={formData.description}
+                                rows={10}
+                                name="content"
+                                value={formData.content}
                                 onChange={handleChange}
                                 className="w-full rounded-xl border p-4 outline-none"
-                                placeholder="Lesson description..."
+                                placeholder="Lesson content..."
                             />
 
                         </div>
@@ -151,8 +190,8 @@ export default function AddLesson({
 
                                 <input
                                     type="text"
-                                    name="videoUrl"
-                                    value={formData.videoUrl}
+                                    name="videoURL"
+                                    value={formData.videoURL}
                                     onChange={handleChange}
                                     placeholder="https://..."
                                     className="w-full p-4 outline-none"
@@ -162,7 +201,7 @@ export default function AddLesson({
 
                         </div>
 
-                        <div>
+                        {/* <div>
 
                             <label className="mb-2 block font-medium">
                                 Duration
@@ -220,7 +259,7 @@ export default function AddLesson({
 
                             </div>
 
-                        </div>
+                        </div> */}
 
                     </div>
 

@@ -11,37 +11,40 @@ import {
 } from "lucide-react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
-
-const courses = [
-    {
-        id: 1,
-        title: "Complete React Development",
-        students: 1240,
-        status: "Published",
-        rating: 4.8,
-    },
-    {
-        id: 2,
-        title: "Node.js Backend Masterclass",
-        students: 860,
-        status: "Published",
-        rating: 4.7,
-    },
-    {
-        id: 3,
-        title: "Advanced TypeScript",
-        students: 0,
-        status: "Draft",
-        rating: 0,
-    },
-];
+import { useEffect, useState } from "react";
+import { Course } from "@/types/course";
+import api from "@/lib/axios";
 
 
 export default function InstructorDashboard() {
+    const [courses, setCourses] = useState<Course[]>([]);
+
+    useEffect(() => {
+
+        async function fetchCourses() {
+
+            try {
+                const coursesRes = await api.get("/courses/my");
+
+                setCourses(
+                    coursesRes.data.courses
+                );
+            } catch (error) {
+                console.log(error);
+            }
+
+        }
+
+
+        fetchCourses();
+
+    }, []);
+
+
 
     return (
 
-        <div className="space-y-8">
+        <div className="space-y-8 p-2 md:p-4 lg:p-6">
 
 
             {/* Header */}
@@ -227,20 +230,20 @@ export default function InstructorDashboard() {
 
                                 <div className="flex gap-3">
 
-                                    <Link
+                                    {/* <Link
                                         href={`/courses/${course.id}/edit`}
                                         className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm hover:bg-slate-50"
                                     >
                                         <Edit size={16} />
                                         Edit
-                                    </Link>
+                                    </Link> */}
 
 
                                     <Link
                                         href={`/course-analytics/${course.id}`}
                                         className="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white"
                                     >
-                                        Analytics
+                                        Details
                                     </Link>
 
                                 </div>

@@ -42,7 +42,17 @@ export const apiRoutes = [
         required_fields: [],
         access: [
             "instructor", "admin", "content-manager"
-        ]
+        ],
+        response_format: {
+            courses: [
+                {
+                    id: 1,
+                    title: "Course Title",
+                    description: "Course Description",
+                    coverImage: "https://example.com/course-cover.jpg",
+                }
+            ]
+        }
     },
     {
         method: "GET",
@@ -135,36 +145,43 @@ export const apiRoutes = [
         ]
     },
     {
+        description: "create question",
         method: "POST",
         path: "/api/question/:quizId",
-        description: "create question",
-        required_fields: [
-            "question", "optionA", "optionB",
-            "optionC", "optionD", "correctAnswer",
-            "order"
-        ],
+        body: {
+            order: 1,
+            statement: "",
+        },
         access: [
             "admin", "instructor", "content-manager"
-        ]
+        ],
+        response: {
+            "createdQuestion": {
+                "id": 8,
+                "documentId": "veubv29vc7ulncdwii9ojdw6",
+                "createdAt": "2026-09-02T15:39:39.611Z",
+                "updatedAt": "2026-09-02T15:39:39.611Z",
+                "publishedAt": "2026-09-02T15:39:39.612Z",
+                "locale": null,
+                "order": 4,
+                "correctAnswer": 1,
+                "options": null,
+                "statement": null
+            }
+        }
     },
     {
         method: "DELETE",
         path: "/api/question/:questionId",
         description: "delete question",
-        required_fields: [
-
-        ],
         access: [
             "admin", "instructor", "content-manager"
         ]
     },
     {
+        description: "fetch questions",
         method: "GET",
         path: "/api/question/:quizId",
-        description: "fetch questions",
-        required_fields: [
-
-        ],
         access: [
             "admin", "instructor", "content-manager", "enrolled students"
         ]

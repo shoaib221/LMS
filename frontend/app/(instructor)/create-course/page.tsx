@@ -22,13 +22,10 @@ export default function CreateCoursePage() {
 
     const [formData, setFormData] = useState({
         title: "",
-        subtitle: "",
         description: "",
         category: "",
-        level: "Beginner",
-        language: "English",
-        price: "",
-        thumbnail: "",
+        price: 0,
+        coverImage: "",
     });
 
     function handleChange(
@@ -56,13 +53,21 @@ export default function CreateCoursePage() {
             setError("");
 
             const response = await api.post(
-                "/api/courses",
+                "/courses",
                 formData
             );
 
-            router.push(`/courses/${response.data.id}`);
+            setFormData({
+                title: "",
+                description: "",
+                category: "",
+                price: 0,
+                coverImage: "",
+            });
+
         }
         catch (err: any) {
+            console.dir(err);
             setError(
                 err.response?.data?.error?.message ??
                 "Failed to create course."
@@ -116,7 +121,7 @@ export default function CreateCoursePage() {
 
                         </div>
 
-                        <div>
+                        {/* <div>
 
                             <label className="mb-2 block font-medium">
                                 Subtitle
@@ -131,7 +136,7 @@ export default function CreateCoursePage() {
                                 placeholder="Master React from beginner to advanced"
                             />
 
-                        </div>
+                        </div> */}
 
                         <div>
 
@@ -181,7 +186,7 @@ export default function CreateCoursePage() {
 
                             </div>
 
-                            <div>
+                            {/* <div>
 
                                 <label className="mb-2 block">
                                     Level
@@ -207,9 +212,9 @@ export default function CreateCoursePage() {
 
                                 </select>
 
-                            </div>
+                            </div> */}
 
-                            <div>
+                            {/* <div>
 
                                 <label className="mb-2 block">
                                     Language
@@ -223,7 +228,7 @@ export default function CreateCoursePage() {
                                     className="w-full rounded-xl border p-4"
                                 />
 
-                            </div>
+                            </div> */}
 
                         </div>
 
@@ -265,7 +270,7 @@ export default function CreateCoursePage() {
                             <div>
 
                                 <label className="mb-2 block">
-                                    Thumbnail URL
+                                    Cover Image URL
                                 </label>
 
                                 <div className="flex items-center rounded-xl border px-4">
@@ -277,8 +282,8 @@ export default function CreateCoursePage() {
 
                                     <input
                                         type="text"
-                                        name="thumbnail"
-                                        value={formData.thumbnail}
+                                        name="coverImage"
+                                        value={formData.coverImage}
                                         onChange={handleChange}
                                         className="w-full p-4 outline-none"
                                     />

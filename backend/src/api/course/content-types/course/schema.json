@@ -14,9 +14,6 @@
     "title": {
       "type": "string"
     },
-    "description": {
-      "type": "blocks"
-    },
     "Media": {
       "type": "media",
       "multiple": false,
@@ -53,6 +50,18 @@
       "relation": "manyToMany",
       "target": "plugin::users-permissions.user",
       "mappedBy": "enrolled_courses"
+    },
+    "coverImage": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "price": {
+      "type": "decimal"
+    },
+    "description": {
+      "type": "text"
     }
   }
 }
