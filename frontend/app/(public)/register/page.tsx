@@ -56,6 +56,7 @@ export default function RegisterPage() {
                     username: formData.username,
                     email: formData.email,
                     password: formData.password,
+                    user_role: formData.role,
                 }
             );
 
@@ -231,26 +232,26 @@ export default function RegisterPage() {
 
 
                         {/* Role */}
-                        {/* <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">
-                            Register As
-                        </label>
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-slate-700">
+                                Register As
+                            </label>
 
-                        <select
-                            name="role"
-                            value={formData.role}
-                            onChange={handleChange}
-                            className="w-full rounded-lg border border-slate-300 px-3 py-3 outline-none"
-                        >
-                            <option value="student">
-                                Student
-                            </option>
+                            <select
+                                name="role"
+                                value={formData.role}
+                                onChange={handleChange}
+                                className="w-full rounded-lg border border-slate-300 px-3 py-3 outline-none"
+                            >
+                                <option value="student">
+                                    Student
+                                </option>
 
-                            <option value="instructor">
-                                Instructor
-                            </option>
-                        </select>
-                    </div> */}
+                                <option value="instructor">
+                                    Instructor
+                                </option>
+                            </select>
+                        </div>
 
 
                         {/* Submit */}

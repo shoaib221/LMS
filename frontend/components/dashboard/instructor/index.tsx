@@ -135,7 +135,7 @@ export default function InstructorDashboard() {
             <section className="flex flex-wrap gap-4">
 
                 <Link
-                    href="/courses/create"
+                    href="/create-course"
                     className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
                 >
                     <Plus size={18} />
@@ -237,7 +237,7 @@ export default function InstructorDashboard() {
 
 
                                     <Link
-                                        href={`/courses/${course.id}/analytics`}
+                                        href={`/course-analytics/${course.id}`}
                                         className="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white"
                                     >
                                         Analytics

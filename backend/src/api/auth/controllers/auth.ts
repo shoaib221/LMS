@@ -9,12 +9,13 @@ export default {
             username,
             email,
             password,
+            user_role
         } = ctx.request.body;
 
 
-        if (!username || !email || !password) {
+        if (!username || !email || !password || !user_role) {
             return ctx.badRequest(
-                "username, email and password required"
+                "username, email, password and user_role required"
             );
         }
 
@@ -42,6 +43,7 @@ export default {
                 username,
                 email,
                 password,
+                user_role,
                 confirmed: true,
                 blocked: false,
             });

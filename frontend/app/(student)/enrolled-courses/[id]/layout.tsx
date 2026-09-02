@@ -20,7 +20,7 @@ export default function CourseLayout({
             <div className="flex flex-1 overflow-hidden">
 
                 {/* Sidebar */}
-                <CourseSidebar />
+                <CourseSidebar courseId="1" />
 
                 {/* Content */}
                 <main className="flex-1 overflow-y-auto bg-slate-50 p-6">

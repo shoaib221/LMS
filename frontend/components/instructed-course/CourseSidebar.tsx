@@ -98,6 +98,29 @@ export default function CourseSidebar({
                         Home
                     </Link>
 
+                    {/* Home */}
+                    <Link
+                        href={`/course-analytics/${courseId}/add-lesson`}
+                        className={`mb-3 flex items-center gap-3 rounded-xl px-4 py-3 transition ${isActive(`/course-analytics/${courseId}/add-lesson`)
+                            ? "bg-blue-600 text-white"
+                            : "text-slate-700 hover:bg-slate-100"
+                            }`}
+                    >
+                        <Home size={20} />
+                        Add Lesson
+                    </Link>
+
+                    <Link
+                        href={`/course-analytics/${courseId}/add-quiz`}
+                        className={`mb-3 flex items-center gap-3 rounded-xl px-4 py-3 transition ${isActive(`/course-analytics/${courseId}/add-quiz`)
+                            ? "bg-blue-600 text-white"
+                            : "text-slate-700 hover:bg-slate-100"
+                            }`}
+                    >
+                        <Home size={20} />
+                        Add Quiz
+                    </Link>
+
                     {/* Lessons */}
                     <button
                         onClick={() =>
