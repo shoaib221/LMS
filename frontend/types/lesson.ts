@@ -1,17 +1,19 @@
 export interface Lesson {
 
-    id: number;
+    id?: number;
 
     documentId?: string;
 
 
-    title: string;
+    title?: string;
 
 
     description?: string;
 
+    content?: any[],
 
-    videoUrl?: string;
+
+    videoURL?: string;
 
 
     duration?: string;
@@ -20,7 +22,7 @@ export interface Lesson {
     notes?: string;
 
 
-    order: number;
+    order?: number;
 
 
     createdAt?: string;

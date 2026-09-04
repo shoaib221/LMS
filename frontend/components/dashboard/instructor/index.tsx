@@ -24,7 +24,7 @@ export default function InstructorDashboard() {
         async function fetchCourses() {
 
             try {
-                const coursesRes = await api.get("/courses/my");
+                const coursesRes = await api.get("/instructed-courses");
 
                 setCourses(
                     coursesRes.data.courses

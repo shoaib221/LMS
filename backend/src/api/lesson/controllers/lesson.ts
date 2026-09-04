@@ -75,7 +75,9 @@ export default {
                 title, content, videoURL, order
             } = ctx.request.body;
 
-            if (!title || !content || !order) {
+            console.log("body", ctx.request.body)
+
+            if (!title || !content || !order || !videoURL) {
                 return ctx.badRequest("Invalid request body.");
             }
 
@@ -101,37 +103,63 @@ export default {
         }
     },
 
+    async getLesson(ctx: any) {
+
+        try {
+
+            console.log("getLesson");
+            const user = ctx.state.user;
+
+            const { lessonId } = ctx.params;
+
+            const lesson = await strapi.db
+                .query("api::lesson.lesson")
+                .findOne({
+                    where: {
+                        id: Number(lessonId)
+                    }
+                });
+
+            if (!lesson) {
+                return ctx.notFound("Lesson not found.");
+            }
+
+            ctx.body = {
+                lesson
+            };
+        }
+        catch (error: any) {
+            return ctx.internalServerError(error.message);
+        }
+    },
+
+
+
     async deleteLesson(ctx: any) {
 
         try {
             console.log("deleteLesson");
             const user = ctx.state.user;
 
-            const { courseId, order } = ctx.params;
+            const { lessonId } = ctx.params;
 
-            const course = await strapi.db
-                .query("api::course.course")
+            const lesson = await strapi.db
+                .query("api::lesson.lesson")
                 .findOne({
                     where: {
-                        id: courseId,
-                        instructor: {
-                            id: user.id
-                        }
-                    },
+                        id: Number(lessonId)
+                    }
                 });
 
-            if (!course) {
-                return ctx.notFound("No such course.");
+            if (!lesson) {
+                return ctx.notFound("No such lesson.");
             }
 
             const deletedLesson = await strapi.db
                 .query("api::lesson.lesson")
                 .delete({
                     where: {
-                        order: Number(order),
-                        course: {
-                            id: courseId
-                        }
+                        id: Number(lessonId)
                     },
                 });
 
@@ -154,32 +182,29 @@ export default {
 
             const user = ctx.state.user;
 
-            const { courseId, order } = ctx.params;
+            const { lessonId } = ctx.params;
 
-            const course = await strapi.db
-                .query("api::course.course")
+            const lesson = await strapi.db
+                .query("api::lesson.lesson")
                 .findOne({
                     where: {
-                        id: courseId,
-                        instructor: {
-                            id: user.id
-                        }
+                        id: Number(lessonId)
                     },
                 });
 
-            if (!course) {
-                return ctx.notFound("No such course.");
+            if (!lesson) {
+                return ctx.notFound("No such lesson.");
             }
 
             const updation = ctx.request.body;
+
+            console.log(updation)
 
             const updatedLesson = await strapi.db
                 .query("api::lesson.lesson")
                 .update({
                     where: {
-                        course: {
-                            id: courseId
-                        }
+                        id: Number(lessonId)
                     },
                     data: {
                         ...updation

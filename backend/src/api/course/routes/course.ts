@@ -3,7 +3,7 @@ export default {
 
         {
             method: "GET",
-            path: "/courses/my",
+            path: "/instructed-courses",
             handler: "course.fetchInstructorCourses",
             config: {
                 auth: false,
@@ -14,13 +14,21 @@ export default {
         },
         {
             method: "POST",
-            path: "/courses",
+            path: "/course",
             handler: "course.createCourse",
             config: {
                 auth: false,
                 middlewares: [
                     "global::auth",
                 ],
+            },
+        },
+        {
+            method: "GET",
+            path: "/course/:courseId",
+            handler: "course.getCourse",
+            config: {
+                auth: false,
             },
         },
         {

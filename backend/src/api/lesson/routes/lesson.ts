@@ -2,7 +2,7 @@ export default {
     routes: [
         {
             method: "GET",
-            path: "/lessons/:courseId",
+            path: "/course/:courseId/lessons",
             handler: "lesson.courseLessons",
             config: {
                 auth: false,
@@ -13,7 +13,7 @@ export default {
         },
         {
             method: "POST",
-            path: "/lessons/:courseId",
+            path: "/course/:courseId/lesson",
             handler: "lesson.createLesson",
             config: {
                 auth: false,
@@ -24,7 +24,7 @@ export default {
         },
         {
             method: "DELETE",
-            path: "/lessons/:courseId/:order",
+            path: "/lesson/:lessonId",
             handler: "lesson.deleteLesson",
             config: {
                 auth: false,
@@ -34,8 +34,19 @@ export default {
             },
         },
         {
+            method: "GET",
+            path: "/lesson/:lessonId",
+            handler: "lesson.getLesson",
+            config: {
+                auth: false,
+                middlewares: [
+                    "global::auth",
+                ],
+            },
+        },
+        {
             method: "PATCH",
-            path: "/lessons/:courseId/:order",
+            path: "/lesson/:lessonId",
             handler: "lesson.updateLesson",
             config: {
                 auth: false,

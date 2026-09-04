@@ -8,7 +8,12 @@ export const apiRoutes = [
         required_fields: [
             "username", "email", "password"
         ],
-        access: ["public"]
+        access: ["public"],
+        response_format: {
+            message: "Registered successfully",
+            user: {},
+            jwtToken: ""
+        }
     },
     {
         path: "/auth/login",
@@ -16,147 +21,212 @@ export const apiRoutes = [
         required_fields: [
             "email", "password"
         ],
-        access: ["public"]
+        access: ["public"],
+        response_format: {
+            jwtToken: "",
+            user: {}
+        }
     },
     {
         method: "GET",
         path: "/auth/me",
-        required_fields: [],
+        description: "get logged in user",
         access: [
             "all users"
-        ]
+        ],
+        response_format: {
+            user: {},
+        }
     },
     {
         method: "POST",
-        path: "/api/courses",
+        path: "/course",
         description: "create course",
-        required_fields: ["title", "description"],
+        body_format: { "title": "string", "description": "string" },
         access: [
             "instructor", "admin", "content-manager"
-        ]
+        ],
+        response_format: {
+            message: "",
+            course: {}
+        }
     },
     {
         method: "GET",
-        path: "/api/courses/my",
-        description: "instructed courses",
-        required_fields: [],
+        path: "/instructed-courses",
+        description: "instructed courses of an instructor",
         access: [
             "instructor", "admin", "content-manager"
         ],
         response_format: {
             courses: [
                 {
-                    id: 1,
-                    title: "Course Title",
-                    description: "Course Description",
-                    coverImage: "https://example.com/course-cover.jpg",
+                    id: 0,
+                    title: "",
+                    description: "",
+                    coverImage: "",
                 }
             ]
         }
     },
     {
         method: "GET",
-        path: "/api/courses",
-        description: "fetch courses",
-        required_fields: [],
+        path: "/courses",
+        description: "fetch all courses",
         access: [
             "public"
-        ]
+        ],
+        response_format: {
+            message: "",
+            courses: {}
+        }
     },
     {
         method: "GET",
-        path: "/api/courses/enrolled-courses",
-        description: "fetch enrolled courses",
-        required_fields: [],
+        path: "/enrolled-courses",
+        description: "fetch enrolled courses of a student",
         access: [
             "student"
-        ]
+        ],
+        response_format: {
+            message: "",
+            courses: {}
+        }
     },
     {
         method: "POST",
-        path: "/api/lessons/:courseId",
+        path: "/course/:courseId/lesson",
         description: "create lesson",
-        required_fields: ["title", "content", "videoURL", "order"],
-        access: [
-            "admin", "instructor", "content-manager"
-        ]
-    },
-    {
-        method: "POST",
-        path: "/api/quiz",
-        description: "create quiz",
-        required_fields: ["title", "description", "courseId"],
-        access: [
-            "admin", "instructor", "content-manager"
-        ]
-    },
-    {
-        method: "GET",
-        path: "/api/lessons/:courseId",
-        description: "course lessons",
-        required_fields: [],
-        access: [
-            "admin", "instructor", "content-manager", "enrolled students"
-        ]
-    },
-    {
-        method: "DELETE",
-        path: "/api/lessons/:courseId/:order",
-        description: "delete lesson",
-        required_fields: [],
-        access: [
-            "admin", "instructor", "content-manager"
-        ]
-    },
-    {
-        method: "PATCH",
-        path: "/api/lessons/:courseId/:order",
-        description: "update lesson",
-        required_fields: [],
-        access: [
-            "admin", "instructor", "content-manager"
-        ]
-    },
-    {
-        method: "DELETE",
-        path: "/api/quiz/:quizId",
-        description: "delete quiz",
-        required_fields: [],
-        access: [
-            "admin", "instructor", "content-manager"
-        ]
-    },
-    {
-        method: "GET",
-        path: "/api/quiz/:courseId",
-        description: "fetch quizzes",
-        required_fields: [],
-        access: [
-            "admin", "instructor", "content-manager", "enrolled students"
-        ]
-    },
-    {
-        method: "PATCH",
-        path: "/api/quiz/:quizId",
-        description: "update quiz",
-        required_fields: [],
-        access: [
-            "admin", "instructor", "content-manager"
-        ]
-    },
-    {
-        description: "create question",
-        method: "POST",
-        path: "/api/question/:quizId",
-        body: {
-            order: 1,
-            statement: "",
+        body_format: {
+            title: "",
+            content: {},
+            videoURL: "",
+            order: 1
         },
         access: [
             "admin", "instructor", "content-manager"
         ],
-        response: {
-            "createdQuestion": {
+        response_format: {
+            lesson: {}
+        }
+    },
+    {
+        method: "POST",
+        path: "/quiz",
+        action: "create quiz",
+        body_format: {
+            "title": "", "description": "", "courseId": 0
+        },
+        access: [
+            "admin", "instructor", "content-manager"
+        ],
+        response_format: {
+            quiz: {}
+        }
+    },
+    {
+        method: "GET",
+        path: "/course/:courseId/lessons",
+        action: "course lessons",
+        access: [
+            "admin", "instructor", "content-manager", "enrolled students"
+        ],
+        response_format: {
+            course: {},
+            lessons: []
+        }
+    },
+    {
+        method: "DELETE",
+        path: "/course/:courseId/lesson/:order",
+        action: "delete lesson",
+        access: [
+            "admin", "instructor", "content-manager"
+        ],
+        response_format: {
+            deletedLesson: {}
+        }
+    },
+    {
+        method: "GET",
+        path: "/course/:courseId/lesson/:order",
+        action: "fetch lesson",
+        access: [
+            "admin", "instructor", "content-manager", "enrolled students"
+        ],
+        response_format: {
+            lesson: {}
+        }
+    },
+    {
+        action: "update lesson",
+        method: "PATCH",
+        path: "/course/:courseId/lesson/:order",
+        body_format: {
+            title: "",
+            content: {},
+            videoURL: "",
+            order: 1
+        },
+        access: [
+            "admin", "instructor", "content-manager"
+        ],
+        response_format: {
+            updatedLesson: {}
+        }
+    },
+    {
+        action: "delete quiz",
+        method: "DELETE",
+        path: "/quiz/:quizId",
+        access: [
+            "admin", "instructor", "content-manager"
+        ],
+        response_format: {
+            message: "Quiz deleted successfully.",
+            quiz: {}
+        }
+    },
+    {
+        method: "GET",
+        path: "/course/:courseId/quizzes",
+        action: "fetch quizzes of a given course",
+        access: [
+            "admin", "instructor", "content-manager", "enrolled students"
+        ],
+        response_format: {
+            quizzes: []
+        }
+    },
+    {
+        method: "PATCH",
+        path: "/quiz/:quizId",
+        description: "update quiz",
+        body_format: {
+            title: "", description: ""
+        },
+        access: [
+            "admin", "instructor", "content-manager"
+        ],
+        response_format: {
+            updatedQuiz: {}
+        }
+    },
+    {
+        action: "create question",
+        method: "POST",
+        path: "/quiz/:quizId/question",
+        body_format: {
+            order: 1,
+            statement: "",
+            options: ["", "", "", ""],
+            correctAnswer: 1
+        },
+        access: [
+            "admin", "instructor", "content-manager"
+        ],
+        response_format: {
+            createdQuestion: {
                 "id": 8,
                 "documentId": "veubv29vc7ulncdwii9ojdw6",
                 "createdAt": "2026-09-02T15:39:39.611Z",
@@ -171,65 +241,77 @@ export const apiRoutes = [
         }
     },
     {
+        action: "delete question",
         method: "DELETE",
-        path: "/api/question/:questionId",
-        description: "delete question",
+        path: "/question/:questionId",
         access: [
             "admin", "instructor", "content-manager"
-        ]
+        ],
+        response_format: {
+            deletedQuestion: {}
+        }
     },
     {
-        description: "fetch questions",
+        action: "fetch questions",
         method: "GET",
-        path: "/api/question/:quizId",
+        path: "/quiz/:quizId/questions",
         access: [
             "admin", "instructor", "content-manager", "enrolled students"
-        ]
+        ],
+        response_format: {
+            questions: []
+        }
     },
     {
         method: "POST",
-        path: "/api/quiz-test/:quizId",
+        path: "/quiz-test/:quizId",
         description: "submit quiz test",
-        request_body_format: [
-            [
-                {
-                    "order": 1,
-                    "answer": "optionC"
-                },
-            ]
+        body_format: [
+            {
+                "order": 1,
+                "answer": 0
+            },
         ],
         access: [
             "enrolled students"
-        ]
+        ],
+        response_format: {
+            quizResult: {}
+        }
     },
     {
+        action: "fetch quiz result",
         method: "GET",
-        path: "/api/quiz-result/:quizId",
-        description: "quiz result",
-        request_body_format: null,
+        path: "/quiz-result/:quizId",
         access: [
             "admin", "instructor", "content-manager", "enrolled students"
-        ]
+        ],
+        response_format: {
+            quizResult: {}
+        }
     },
     {
         method: "POST",
-        path: "/api/courses/enroll",
-        description: "enroll for quiz",
-        request_body_format: {
-            "courseId": 8
-        },
+        path: "/course/:courseId/enroll",
+        description: "enroll for course",
         access: [
             "enrolled students"
-        ]
+        ],
+        response_format: {
+            message: "Course enrolled successfully.",
+        }
     },
     {
         method: "GET",
-        path: "/api/courses",
+        path: "/courses",
         description: "fetch courses",
-        request_body_format: null,
         access: [
             "public"
-        ]
+        ],
+        response_format: {
+            message: "Student enrolled successfully.",
+            courses: {}
+        }
     },
 
 ]

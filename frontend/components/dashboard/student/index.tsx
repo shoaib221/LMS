@@ -39,7 +39,7 @@ export default function StudentDashboard() {
 
     return (
 
-        <div className="space-y-8">
+        <div className="space-y-8 p-4">
 
             {/* Welcome */}
             <section className="rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-700 p-8 text-white">

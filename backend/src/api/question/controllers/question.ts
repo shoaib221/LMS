@@ -3,7 +3,7 @@ export default {
 
     async createQuestion(ctx: any) {
         try {
-            console.log("enrolledCourses");
+            console.log("create question");
             const user = ctx.state.user;
 
             const { quizId } = ctx.params;

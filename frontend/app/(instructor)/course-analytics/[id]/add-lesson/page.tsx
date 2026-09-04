@@ -12,6 +12,9 @@ import {
 } from "lucide-react";
 
 import api from "@/lib/axios";
+import BlockNoteEditor from "@/components/blocknote/BlocknoteEditor";
+import { Lesson } from "@/types/lesson";
+
 
 interface AddLessonProps {
     courseId: string;
@@ -23,15 +26,15 @@ export default function AddLesson({ }: AddLessonProps) {
 
     const { id: courseId } = useParams<{ id: string }>();
     const router = useRouter();
-
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const [formData, setFormData] = useState({
+
+    const [formData, setFormData] = useState<Lesson>({
         title: "",
-        content: "",
         videoURL: "",
-        order: 1
+        content: [],
+        order: 0
     });
 
     function handleChange(
@@ -48,6 +51,8 @@ export default function AddLesson({ }: AddLessonProps) {
         }));
     }
 
+
+
     async function handleSubmit(
         e: FormEvent<HTMLFormElement>
     ) {
@@ -57,19 +62,14 @@ export default function AddLesson({ }: AddLessonProps) {
             setLoading(true);
             setError("");
 
+            console.log(formData);
+
             await api.post(
-                `/lessons/${courseId}`,
+                `/course/${courseId}/lesson`,
                 formData
             );
 
-
-            setFormData({
-                title: "",
-                content: "",
-                videoURL: "",
-                order: 1
-            });
-
+            window.location.reload();
 
         }
         catch (err: any) {
@@ -164,17 +164,18 @@ export default function AddLesson({ }: AddLessonProps) {
                                 Content
                             </label>
 
-                            <textarea
-                                rows={10}
+                            <BlockNoteEditor
                                 name="content"
                                 value={formData.content}
-                                onChange={handleChange}
-                                className="w-full rounded-xl border p-4 outline-none"
-                                placeholder="Lesson content..."
+                                onChange={(name, value) => {
+                                    setFormData({ ...formData, [name]: value });
+                                }}
                             />
 
                         </div>
 
+
+                        {/* Video URL */}
                         <div>
 
                             <label className="mb-2 block font-medium">

@@ -46,10 +46,40 @@ export default {
         }
     },
 
+    async getQuiz(ctx: any) {
+
+        try {
+            console.log("getQuiz");
+            const user = ctx.state.user;
+
+            const { quizId } = ctx.params;
+
+            // Create the quiz
+            const quiz = await strapi.db
+                .query("api::quiz.quiz")
+                .findOne({
+                    where: {
+                        id: Number(quizId),
+                    },
+                });
+
+            if (!quiz) {
+                return ctx.notFound("Quiz not found.");
+            }
+
+            ctx.body = {
+                quiz
+            };
+        }
+        catch (error: any) {
+            return ctx.internalServerError(error.message);
+        }
+    },
+
     async deleteQuiz(ctx: any) {
 
         try {
-            console.log("createCourse");
+            console.log("delete quiz");
             const user = ctx.state.user;
 
             const { quizId } = ctx.params;
@@ -94,7 +124,7 @@ export default {
     async updateQuiz(ctx: any) {
 
         try {
-            console.log("createCourse");
+            console.log("update quiz");
             const user = ctx.state.user;
 
             const { quizId } = ctx.params

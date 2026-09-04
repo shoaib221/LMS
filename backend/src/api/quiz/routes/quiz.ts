@@ -14,7 +14,7 @@ export default {
         },
         {
             method: "GET",
-            path: "/quiz/:courseId",
+            path: "/course/:courseId/quizzes",
             handler: "quiz.courseQuizes",
             config: {
                 auth: false,
@@ -38,6 +38,17 @@ export default {
             method: "PATCH",
             path: "/quiz/:quizId",
             handler: "quiz.updateQuiz",
+            config: {
+                auth: false,
+                middlewares: [
+                    "global::auth",
+                ],
+            },
+        },
+        {
+            method: "GET",
+            path: "/quiz/:quizId",
+            handler: "quiz.getQuiz",
             config: {
                 auth: false,
                 middlewares: [

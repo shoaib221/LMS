@@ -41,7 +41,7 @@ export default {
                 }
             }
 
-            const quizTest = await strapi.db
+            const quizResult = await strapi.db
                 .query("api::quiz-test.quiz-test")
                 .create({
                     data: {
@@ -53,7 +53,7 @@ export default {
                 });
 
             ctx.body = {
-                quizTest
+                quizResult
             };
 
         }

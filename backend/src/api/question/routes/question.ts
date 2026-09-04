@@ -4,7 +4,7 @@ export default {
     routes: [
         {
             method: "POST",
-            path: "/question/:quizId",
+            path: "/quiz/:quizId/question",
             handler: "question.createQuestion",
             config: {
                 auth: false,
@@ -15,7 +15,7 @@ export default {
         },
         {
             method: "GET",
-            path: "/question/:quizId",
+            path: "/quiz/:quizId/questions",
             handler: "question.quizQuestions",
             config: {
                 auth: false,

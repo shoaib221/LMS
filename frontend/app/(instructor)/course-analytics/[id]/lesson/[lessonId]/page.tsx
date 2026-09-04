@@ -12,57 +12,68 @@ import {
 } from "lucide-react";
 
 import api from "@/lib/axios";
+import BlockNoteEditor from "@/components/blocknote/BlocknoteEditor";
+import { Lesson } from "@/types/lesson";
+import ErrorProcessor from "@/lib/ErrorProcessor";
 
-interface Lesson {
-    title: string;
-    description: string;
-    videoUrl: string;
-    duration: string;
-    notes: string;
+
+interface AddLessonProps {
+    courseId: string;
 }
 
-export default function EditLessonPage() {
+
+
+export default function UpdateLesson({ }: AddLessonProps) {
+
+    const { id: courseId, lessonId } = useParams<{ id: string }>();
     const router = useRouter();
-
-    const { id, lessonId } = useParams<{
-        id: string;
-        lessonId: string;
-    }>();
-
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-
     const [error, setError] = useState("");
+
 
     const [formData, setFormData] = useState<Lesson>({
         title: "",
-        description: "",
-        videoUrl: "",
-        duration: "",
-        notes: "",
+        videoURL: "",
+        content: [],
+        order: 0
     });
 
-    useEffect(() => {
-        async function fetchLesson() {
-            try {
-                const response = await api.get(
-                    `/api/courses/${id}/lessons/${lessonId}`
-                );
+    async function FetchLesson() {
+        setLoading(true)
+        try {
+            const response = await api.get(`/lesson/${lessonId}`);
 
-                setFormData(response.data);
-            } catch {
-                setError("Failed to load lesson.");
-            } finally {
-                setLoading(false);
-            }
+            setFormData({ ...response.data.lesson })
         }
+        catch (err) {
+            setError(ErrorProcessor(err))
+        }
+        finally {
+            setLoading(false)
+        }
+    }
 
-        fetchLesson();
-    }, [id, lessonId]);
+    async function DeleteLesson() {
+        try {
+            const response = await api.delete(`/lesson/${lessonId}`)
+            router.push(`/course-analytics/${courseId}`)
+        }
+        catch (err) {
+            setError(ErrorProcessor(err))
+        }
+    }
+
+    useEffect(() => {
+        if (!lessonId) return;
+
+        FetchLesson()
+
+    }, [lessonId])
 
     function handleChange(
         e: ChangeEvent<
-            HTMLInputElement | HTMLTextAreaElement
+            HTMLInputElement |
+            HTMLTextAreaElement
         >
     ) {
         const { name, value } = e.target;
@@ -73,55 +84,67 @@ export default function EditLessonPage() {
         }));
     }
 
+    function EditorChange(name, value) {
+
+        console.log(value)
+
+        setFormData({ ...formData, [name]: value });
+
+    }
+
+
+
     async function handleSubmit(
         e: FormEvent<HTMLFormElement>
     ) {
         e.preventDefault();
 
         try {
-            setSaving(true);
+            setLoading(true);
             setError("");
 
-            await api.put(
-                `/api/courses/${id}/lessons/${lessonId}`,
+            console.log(formData);
+
+            await api.patch(
+                `/lesson/${lessonId}`,
                 formData
             );
 
-            router.push(`/course-analytics/${id}`);
-        } catch (err: any) {
+            window.location.reload();
+
+        }
+        catch (err: any) {
             setError(
                 err.response?.data?.error?.message ??
-                "Failed to update lesson."
+                "Failed to create lesson."
             );
-        } finally {
-            setSaving(false);
+        }
+        finally {
+            setLoading(false);
         }
     }
 
-    if (loading) {
-        return (
-            <div className="flex h-96 items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-            </div>
-        );
-    }
+    if (loading) return <Loader2 />
 
     return (
         <main className="mx-auto max-w-4xl p-8">
 
             <h1 className="mb-8 text-4xl font-bold">
-                Edit Lesson
+                Add Lesson
             </h1>
 
             <form
                 onSubmit={handleSubmit}
                 className="space-y-8"
             >
+
                 <section className="rounded-3xl bg-white p-8 shadow">
 
                     <div className="space-y-6">
 
+                        {/* title */}
                         <div>
+
                             <label className="mb-2 block font-medium">
                                 Lesson Title
                             </label>
@@ -138,28 +161,64 @@ export default function EditLessonPage() {
                                     name="title"
                                     value={formData.title}
                                     onChange={handleChange}
+                                    placeholder="Introduction"
                                     className="w-full p-4 outline-none"
                                     required
                                 />
 
                             </div>
+
                         </div>
 
+
+                        {/* Order */}
                         <div>
+
                             <label className="mb-2 block font-medium">
-                                Description
+                                Lesson Order
                             </label>
 
-                            <textarea
-                                rows={5}
-                                name="description"
-                                value={formData.description}
-                                onChange={handleChange}
-                                className="w-full rounded-xl border p-4"
-                            />
+                            <div className="flex items-center rounded-xl border px-4">
+
+                                <BookOpen
+                                    size={18}
+                                    className="text-slate-400"
+                                />
+
+                                <input
+                                    type="number"
+                                    name="order"
+                                    value={formData.order}
+                                    onChange={handleChange}
+                                    placeholder="1"
+                                    className="w-full p-4 outline-none"
+                                    required
+                                />
+
+                            </div>
+
                         </div>
 
+
+                        {/* Content */}
                         <div>
+
+                            <label className="mb-2 block font-medium">
+                                Content
+                            </label>
+
+                            <BlockNoteEditor
+                                name="content"
+                                value={formData.content}
+                                onChange={EditorChange}
+                            />
+
+                        </div>
+
+
+                        {/* Video URL */}
+                        <div>
+
                             <label className="mb-2 block font-medium">
                                 Video URL
                             </label>
@@ -173,16 +232,19 @@ export default function EditLessonPage() {
 
                                 <input
                                     type="text"
-                                    name="videoUrl"
-                                    value={formData.videoUrl}
+                                    name="videoURL"
+                                    value={formData.videoURL}
                                     onChange={handleChange}
+                                    placeholder="https://..."
                                     className="w-full p-4 outline-none"
                                 />
 
                             </div>
+
                         </div>
 
-                        <div>
+                        {/* <div>
+
                             <label className="mb-2 block font-medium">
                                 Duration
                             </label>
@@ -199,13 +261,16 @@ export default function EditLessonPage() {
                                     name="duration"
                                     value={formData.duration}
                                     onChange={handleChange}
+                                    placeholder="18 minutes"
                                     className="w-full p-4 outline-none"
                                 />
 
                             </div>
+
                         </div>
 
                         <div>
+
                             <label className="mb-2 block font-medium">
                                 Lesson Notes
                             </label>
@@ -230,11 +295,13 @@ export default function EditLessonPage() {
                                     name="notes"
                                     value={formData.notes}
                                     onChange={handleChange}
+                                    placeholder="Write lesson notes..."
                                     className="w-full resize-none p-4 outline-none"
                                 />
 
                             </div>
-                        </div>
+
+                        </div> */}
 
                     </div>
 
@@ -250,20 +317,31 @@ export default function EditLessonPage() {
 
                     <button
                         type="submit"
-                        disabled={saving}
+                        disabled={loading}
                         className="flex items-center gap-3 rounded-xl bg-blue-600 px-8 py-4 font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
                     >
-                        {saving ? (
+                        {loading ? (
                             <>
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                                Updating...
+                                <Loader2
+                                    size={18}
+                                    className="animate-spin"
+                                />
+                                Saving...
                             </>
                         ) : (
                             <>
                                 <Save size={18} />
-                                Update Lesson
+                                Add Lesson
                             </>
                         )}
+                    </button>
+
+                    <button
+                        onClick={DeleteLesson}
+                        disabled={loading}
+                        className="flex items-center gap-3 rounded-xl bg-blue-600 px-8 py-4 font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
+                    >
+                        Delete
                     </button>
 
                 </div>

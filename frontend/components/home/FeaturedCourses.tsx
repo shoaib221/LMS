@@ -1,40 +1,34 @@
+"use client"
+
+import { Course } from "@/types/course";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import api from "@/lib/axios";
 
-const featuredCourses = [
-    {
-        id: 1,
-        title: "Complete Web Development Bootcamp",
-        instructor: "John Doe",
-        image: "/images/courses/web-development.jpg",
-        students: "12,540",
-        lessons: 42,
-        duration: "24 Hours",
-        price: "$49",
-    },
-    {
-        id: 2,
-        title: "Mastering UI/UX Design",
-        instructor: "Jane Smith",
-        image: "/images/courses/uiux.jpg",
-        students: "8,720",
-        lessons: 30,
-        duration: "18 Hours",
-        price: "$39",
-    },
-    {
-        id: 3,
-        title: "Data Structures & Algorithms",
-        instructor: "Alex Johnson",
-        image: "/images/courses/dsa.jpg",
-        students: "15,200",
-        lessons: 56,
-        duration: "35 Hours",
-        price: "$59",
-    },
-];
 
 export default function FeaturedCourses() {
+    const [courses, setCourses] = useState<Course[]>([])
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                setLoading(true);
+
+                const res = await api.get("/courses");
+
+                setCourses(res.data.courses);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCourses();
+    }, []);
+
     return (
         <section className="bg-white py-20">
             <div className="mx-auto max-w-7xl px-6">
@@ -64,18 +58,18 @@ export default function FeaturedCourses() {
                 </div>
 
                 <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-                    {featuredCourses.map((course) => (
+                    {courses && courses.map((course) => (
                         <div
                             key={course.id}
                             className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
                         >
                             <div className="relative h-56">
-                                <Image
-                                    src={course.image}
+                                {course.coverImage && <Image
+                                    src={course.coverImage}
                                     alt={course.title}
                                     fill
                                     className="object-cover"
-                                />
+                                />}
                             </div>
 
                             <div className="p-6">
@@ -90,14 +84,14 @@ export default function FeaturedCourses() {
                                 <p className="mt-2 text-sm text-slate-500">
                                     Instructor:{" "}
                                     <span className="font-medium text-slate-700">
-                                        {course.instructor}
+                                        {course.instructor?.username}
                                     </span>
                                 </p>
 
                                 <div className="mt-6 grid grid-cols-3 gap-4 text-center">
                                     <div>
                                         <p className="font-bold text-slate-900">
-                                            {course.students}
+                                            {course.enrolled_users?.length}
                                         </p>
                                         <p className="text-xs text-slate-500">
                                             Students
@@ -106,21 +100,14 @@ export default function FeaturedCourses() {
 
                                     <div>
                                         <p className="font-bold text-slate-900">
-                                            {course.lessons}
+                                            {course.lessons?.length}
                                         </p>
                                         <p className="text-xs text-slate-500">
                                             Lessons
                                         </p>
                                     </div>
 
-                                    <div>
-                                        <p className="font-bold text-slate-900">
-                                            {course.duration}
-                                        </p>
-                                        <p className="text-xs text-slate-500">
-                                            Duration
-                                        </p>
-                                    </div>
+
                                 </div>
 
                                 <div className="mt-8 flex items-center justify-between">

@@ -12,7 +12,7 @@ export default {
                 return ctx.unauthorized("Unauthorized action");
             }
 
-            const { courseId } = ctx.request.body;
+            const { courseId } = ctx.params;
 
             if (!courseId) {
                 return ctx.badRequest("courseId is required.");

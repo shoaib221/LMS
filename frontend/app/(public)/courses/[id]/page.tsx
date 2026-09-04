@@ -1,3 +1,5 @@
+"use client"
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -5,59 +7,20 @@ import {
     Clock,
     FileText,
     GraduationCap,
+    Loader2,
     PlayCircle,
     Star,
     Users,
 } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Course } from "@/types/course";
+import api from "@/lib/axios";
+import ErrorProcessor from "@/lib/ErrorProcessor";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 
-const course = {
-    id: "1",
-    title: "Complete Web Development Bootcamp",
-    description:
-        "Learn modern web development from scratch. Build real-world applications using HTML, CSS, JavaScript, React, Next.js, and backend technologies.",
-    instructor: "John Doe",
-    category: "Programming",
-    level: "Beginner",
-    duration: "24 Hours",
-    students: "12,540",
-    lessons: 42,
-    rating: 4.9,
-    reviews: 2450,
-    price: "$49",
-    image: "/images/courses/web-development.jpg",
-
-    learn: [
-        "Build responsive websites using HTML and CSS",
-        "Master JavaScript fundamentals",
-        "Create modern React applications",
-        "Build full-stack applications",
-        "Deploy applications to production",
-    ],
-
-    curriculum: [
-        {
-            title: "Introduction to Web Development",
-            lessons: 5,
-        },
-        {
-            title: "HTML & CSS Fundamentals",
-            lessons: 8,
-        },
-        {
-            title: "JavaScript Essentials",
-            lessons: 10,
-        },
-        {
-            title: "React & Next.js",
-            lessons: 12,
-        },
-        {
-            title: "Deployment & Best Practices",
-            lessons: 7,
-        },
-    ],
-};
 
 
 interface PageProps {
@@ -67,11 +30,45 @@ interface PageProps {
 }
 
 
-export default async function CourseDetailsPage({
-    params,
-}: PageProps) {
+export default function CourseDetailsPage() {
 
-    const { id } = await params;
+    const { id } = useParams()
+    const [course, setCourse] = useState<Course | null>(null)
+    const { user } = useAuth()
+    const router = useRouter()
+
+    useEffect(() => {
+        if (!id) return;
+
+        async function FetchCourse() {
+            try {
+                const response = await api.get(`/course/${id}`)
+
+                console.log(response)
+
+                setCourse(response.data.course)
+            }
+            catch (err) {
+                ErrorProcessor(err)
+            }
+        }
+
+        FetchCourse()
+
+    }, [id])
+
+    const handleEnroll = async () => {
+        const res = await api.post(
+            "/api/payments/create-checkout-session",
+            {
+                courseId,
+            }
+        );
+
+        window.location.href = res.data.url;
+    };
+
+    if (!course) return <Loader2 />
 
 
     return (
@@ -100,16 +97,16 @@ export default async function CourseDetailsPage({
 
                         <div className="mt-8 flex flex-wrap gap-6 text-sm">
 
-                            <div className="flex items-center gap-2">
+                            {/* <div className="flex items-center gap-2">
                                 <Star
                                     size={18}
                                     fill="currentColor"
                                 />
                                 {course.rating} ({course.reviews})
-                            </div>
+                            </div> */}
 
 
-                            <div className="flex items-center gap-2">
+                            {/* <div className="flex items-center gap-2">
                                 <Users size={18} />
                                 {course.students} students
                             </div>
@@ -118,7 +115,7 @@ export default async function CourseDetailsPage({
                             <div className="flex items-center gap-2">
                                 <Clock size={18} />
                                 {course.duration}
-                            </div>
+                            </div> */}
 
                         </div>
 
@@ -126,7 +123,7 @@ export default async function CourseDetailsPage({
                         <p className="mt-6">
                             Instructor:
                             <span className="ml-2 font-semibold">
-                                {course.instructor}
+                                {course.instructor?.username}
                             </span>
                         </p>
 
@@ -137,8 +134,8 @@ export default async function CourseDetailsPage({
 
                         <div className="relative h-72">
                             <Image
-                                src={course.image}
-                                alt={course.title}
+                                src={course.coverImage!}
+                                alt={course.title!}
                                 fill
                                 className="object-cover"
                             />
@@ -148,21 +145,28 @@ export default async function CourseDetailsPage({
                         <div className="p-6">
 
                             <h2 className="text-3xl font-bold text-slate-900">
-                                {course.price}
+                                $ {course.price}
                             </h2>
 
 
-                            <button className="mt-6 w-full rounded-xl bg-blue-600 py-4 font-semibold text-white transition hover:bg-blue-700">
+                            {user ? <button className="mt-6 w-full rounded-xl bg-blue-600 py-4 font-semibold text-white transition hover:bg-blue-700">
                                 Enroll Now
-                            </button>
+                            </button> :
+                                <button className="mt-6 w-full rounded-xl bg-blue-600 py-4 font-semibold text-white transition hover:bg-blue-700"
+                                    onClick={() => router.push('/register')}
+                                >
+                                    Sign up to Enroll
+                                </button>
+                            }
+
 
 
                             <div className="mt-6 space-y-3 text-sm text-slate-600">
 
-                                <p className="flex items-center gap-2">
+                                {/* <p className="flex items-center gap-2">
                                     <PlayCircle size={18} />
                                     {course.lessons} lessons
-                                </p>
+                                </p> */}
 
                                 <p className="flex items-center gap-2">
                                     <FileText size={18} />
@@ -191,36 +195,6 @@ export default async function CourseDetailsPage({
                 {/* Main */}
                 <div className="space-y-10 lg:col-span-2">
 
-
-                    {/* What learn */}
-                    <div className="rounded-2xl bg-white p-8 shadow-sm">
-
-                        <h2 className="text-3xl font-bold text-slate-900">
-                            What You'll Learn
-                        </h2>
-
-
-                        <div className="mt-6 grid gap-4 md:grid-cols-2">
-
-                            {course.learn.map((item) => (
-                                <div
-                                    key={item}
-                                    className="flex gap-3 text-slate-700"
-                                >
-                                    <CheckCircle
-                                        className="shrink-0 text-green-600"
-                                    />
-
-                                    {item}
-                                </div>
-                            ))}
-
-                        </div>
-
-                    </div>
-
-
-
                     {/* Curriculum */}
                     <div className="rounded-2xl bg-white p-8 shadow-sm">
 
@@ -231,21 +205,19 @@ export default async function CourseDetailsPage({
 
                         <div className="mt-6 space-y-4">
 
-                            {course.curriculum.map((section, index) => (
+                            {course.lessons?.map((lesson, index) => (
 
                                 <div
-                                    key={section.title}
+                                    key={lesson.id}
                                     className="flex items-center justify-between rounded-xl border p-5"
                                 >
 
                                     <div>
                                         <p className="font-semibold text-slate-900">
-                                            {index + 1}. {section.title}
+                                            {index + 1}. {lesson.title}
                                         </p>
 
-                                        <p className="mt-1 text-sm text-slate-500">
-                                            {section.lessons} lessons
-                                        </p>
+
                                     </div>
 
 
@@ -273,7 +245,7 @@ export default async function CourseDetailsPage({
                     </h3>
 
 
-                    <div className="mt-6 space-y-4 text-slate-600">
+                    {/* <div className="mt-6 space-y-4 text-slate-600">
 
                         <p>
                             Level:
@@ -298,7 +270,7 @@ export default async function CourseDetailsPage({
                             </span>
                         </p>
 
-                    </div>
+                    </div> */}
 
 
                     <Link

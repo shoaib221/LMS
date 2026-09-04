@@ -8,7 +8,7 @@ import ErrorProcessor from "@/lib/ErrorProcessor";
 
 interface QuestionEditorProps {
     onCreation: () => void;
-    quizId: string;
+    quizId: string | number;
 }
 
 export default function QuestionCreator({
@@ -28,7 +28,7 @@ export default function QuestionCreator({
 
     async function CreateQuestion() {
         try {
-            const response = await api.post(`/question/${quizId}`, formData);
+            const response = await api.post(`/quiz/${quizId}/question`, formData);
             onCreation();
 
             setFormData({

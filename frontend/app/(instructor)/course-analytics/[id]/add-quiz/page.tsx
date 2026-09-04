@@ -36,7 +36,7 @@ export default function AddQuizPage() {
             setLoading(true);
             setError("");
 
-            console.log(title, description, order, courseId)
+            console.log(title, description, order, courseId);
 
             await api.post("/quiz", {
                 title,

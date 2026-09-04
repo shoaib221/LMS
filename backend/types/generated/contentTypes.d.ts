@@ -553,6 +553,33 @@ export interface ApiLessonLesson extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiPaymentPayment extends Struct.CollectionTypeSchema {
+  collectionName: 'payments';
+  info: {
+    displayName: 'Payment';
+    pluralName: 'payments';
+    singularName: 'payment';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::payment.payment'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiQuestionOptionQuestionOption
   extends Struct.CollectionTypeSchema {
   collectionName: 'question_options';
@@ -1219,6 +1246,7 @@ declare module '@strapi/strapi' {
       'api::blog.blog': ApiBlogBlog;
       'api::course.course': ApiCourseCourse;
       'api::lesson.lesson': ApiLessonLesson;
+      'api::payment.payment': ApiPaymentPayment;
       'api::question-option.question-option': ApiQuestionOptionQuestionOption;
       'api::question.question': ApiQuestionQuestion;
       'api::quiz-test.quiz-test': ApiQuizTestQuizTest;

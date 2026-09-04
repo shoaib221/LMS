@@ -8,6 +8,7 @@ import QuestionCreator from "@/components/question/QuestionInput";
 import { Question } from "@/types/question";
 import { Quiz } from "@/types/quiz";
 import { Circle, CircleDot } from "lucide-react";
+import ErrorProcessor from "@/lib/ErrorProcessor";
 
 
 
@@ -22,25 +23,22 @@ export default function EditQuizPage() {
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
     const [questions, setQuestions] = useState<Question[]>([]);
     const [quiz, setQuiz] = useState<Quiz | null>(null);
 
     useEffect(() => {
-        if (!id || !quizId) {
+        if (!quizId) {
             return;
         }
 
         async function fetchQuiz() {
             try {
                 setLoading(true);
-                const response = await api.get(
-                    `/api/courses/${id}/quizzes/${quizId}`
-                );
+                const response = await api.get(`/quiz/${quizId}`);
                 setQuiz(response.data.quiz);
-                setTitle(response.data.quiz.title);
-                setDescription(response.data.quiz.description);
+
+                console.log("Fetched quiz:", response);
+
             } catch (err) {
                 setError(
                     "Failed to fetch quiz data. Please try again later."
@@ -51,14 +49,14 @@ export default function EditQuizPage() {
         }
 
         fetchQuiz();
-    }, [id, quizId]);
+    }, [quizId]);
 
 
     async function fetchQuestions() {
         try {
             setLoading(true);
             const response = await api.get(
-                `/question/${quizId}`
+                `/quiz/${quizId}/questions`
             );
 
             console.log("Fetched questions:", response);
@@ -75,7 +73,7 @@ export default function EditQuizPage() {
 
     useEffect(() => {
 
-        if (!id || !quizId) {
+        if (!quizId) {
 
             return;
         }
@@ -83,9 +81,10 @@ export default function EditQuizPage() {
         fetchQuestions();
 
 
-    }, [id, quizId]);
+    }, [quizId]);
 
     async function deleteQuestion(questionId: number) {
+        console.log("questionId", questionId)
 
         try {
             const response = await api.delete(
@@ -99,6 +98,15 @@ export default function EditQuizPage() {
         }
     }
 
+    async function deleteQuiz() {
+        try {
+            const response = await api.delete(`/quiz/${quizId}`)
+            router.push("/dashboad")
+        } catch (err) {
+            setError(ErrorProcessor(err))
+        }
+    }
+
 
     async function handleSubmit(
         e: FormEvent<HTMLFormElement>
@@ -109,10 +117,11 @@ export default function EditQuizPage() {
             setSaving(true);
             setError("");
 
-            await api.put(
-                `/api/courses/${id}/quizzes/${quizId}`,
+            await api.patch(
+                `/quiz/${quizId}`,
                 {
-                    title,
+                    title: quiz?.title,
+                    description: quiz?.description,
                     questions,
                 }
             );
@@ -157,9 +166,13 @@ export default function EditQuizPage() {
                     </label>
 
                     <input
-                        value={title}
+                        value={quiz?.title}
                         onChange={(e) =>
-                            setTitle(e.target.value)
+                            setQuiz((currentQuiz) =>
+                                currentQuiz
+                                    ? { ...currentQuiz, title: e.target.value }
+                                    : null
+                            )
                         }
                         className="w-full rounded-xl border p-4"
                         required
@@ -170,9 +183,13 @@ export default function EditQuizPage() {
                     </label>
 
                     <input
-                        value={description}
+                        value={quiz?.description}
                         onChange={(e) =>
-                            setDescription(e.target.value)
+                            setQuiz((currentQuiz) =>
+                                currentQuiz
+                                    ? { ...currentQuiz, description: e.target.value }
+                                    : null
+                            )
                         }
                         className="w-full rounded-xl border p-4"
                         required
@@ -191,6 +208,16 @@ export default function EditQuizPage() {
                     <button
                         disabled={saving}
                         className="flex items-center gap-3 rounded-xl bg-blue-600 px-8 py-4 font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
+                        onClick={deleteQuiz}
+                    >
+                        <Trash2 />
+                        Delete Quiz
+                    </button>
+
+                    <button
+                        disabled={saving}
+                        className="flex items-center gap-3 rounded-xl bg-blue-600 px-8 py-4 font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
+                        type="submit"
                     >
                         {saving ? (
                             <>

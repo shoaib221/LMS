@@ -2,7 +2,7 @@ export default {
     routes: [
         {
             method: "POST",
-            path: "/courses/enroll",
+            path: "/course/:courseId/enroll",
             handler: "enrollment.enroll",
             config: {
                 auth: false,
@@ -13,7 +13,7 @@ export default {
         },
         {
             method: "GET",
-            path: "/courses/enrolled-courses",
+            path: "/enrolled-courses",
             handler: "enrollment.enrolledCourses",
             config: {
                 auth: false,

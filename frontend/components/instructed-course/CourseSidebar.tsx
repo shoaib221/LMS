@@ -39,9 +39,9 @@ export default function CourseSidebar({
         // Fetch lessons and quizzes for the course
         const fetchData = async () => {
             try {
-                const lessonsResponse = await api.get(`/lessons/${courseId}`);
+                const lessonsResponse = await api.get(`/course/${courseId}/lessons`);
                 setLessons(lessonsResponse.data.lessons);
-                const quizzesResponse = await api.get(`/quiz/${courseId}`);
+                const quizzesResponse = await api.get(`/course/${courseId}/quizzes`);
                 setQuizzes(quizzesResponse.data.quizzes);
             }
             catch (error) {

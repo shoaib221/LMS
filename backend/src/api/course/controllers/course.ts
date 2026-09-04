@@ -1,5 +1,31 @@
 export default {
 
+    async getCourse(ctx: any) {
+        try {
+            console.log("get course");
+
+            const { courseId } = ctx.params;
+
+            const course = await strapi.db
+                .query("api::course.course")
+                .findOne({
+                    where: {
+                        id: Number(courseId)
+                    },
+                    populate: {
+                        instructor: true,
+                        lessons: true
+                    },
+                });
+
+            ctx.body = {
+                course
+            }
+        }
+        catch (err) {
+
+        }
+    },
 
     async fetchCourses(ctx: any) {
         try {
